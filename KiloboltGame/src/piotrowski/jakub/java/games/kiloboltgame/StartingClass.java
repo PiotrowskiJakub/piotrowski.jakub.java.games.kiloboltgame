@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.Graphics;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class StartingClass extends Applet implements Runnable, KeyListener
 {
@@ -75,6 +76,17 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 				currentSprite = characterJumped;
 			else if(robot.isJumped() == false && robot.isDucked() == false)
 				currentSprite = character;
+			
+			ArrayList<Projectile> projectiles = robot.getProjectiles();
+			for(int i = 0; i < projectiles.size(); i++)
+			{
+				Projectile p = projectiles.get(i);
+				if(p.isVisible() == true)
+					p.update();
+				else
+					projectiles.remove(i);
+			}
+			
 			hb.update();
 			hb2.update();
 			bg1.update();
@@ -112,6 +124,15 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 	{
 		g.drawImage(background, bg1.getBgX(), bg1.getBgY(), this);
 		g.drawImage(background, bg2.getBgX(), bg2.getBgY(), this);
+		
+		ArrayList<Projectile> projectiles = robot.getProjectiles();
+		for(int i = 0; i < projectiles.size(); i++)
+		{
+			Projectile p = projectiles.get(i);
+			g.setColor(Color.YELLOW);
+			g.fillRect(p.getX(), p.getY(), 10, 5);
+		}
+		
 		g.drawImage(heliboy, hb.getCenterX()-48, hb.getCenterY()-48, this);
 		g.drawImage(heliboy, hb2.getCenterX()-48, hb2.getCenterY()-48, this);
 		g.drawImage(currentSprite, robot.getCenterX()-61, robot.getCenterY()-63, this);
@@ -126,7 +147,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 		switch(e.getKeyCode())
 		{
 			case KeyEvent.VK_UP:
-				System.out.println("Move up");
+				robot.jump();
 				break;
 			case KeyEvent.VK_DOWN:
 				currentSprite = characterDown;
@@ -145,7 +166,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 				robot.setMovingRight(true);
 				break;
 			case KeyEvent.VK_SPACE:
-				robot.jump();
+				if(robot.isDucked() == false && robot.isJumped() == false)
+					robot.shoot();
 				break;
 		}
 	}
@@ -156,7 +178,6 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 		switch(e.getKeyCode())
 		{
 			case KeyEvent.VK_UP:
-				System.out.println("Stop moving up");
 				break;
 			case KeyEvent.VK_DOWN:
 				currentSprite = character;

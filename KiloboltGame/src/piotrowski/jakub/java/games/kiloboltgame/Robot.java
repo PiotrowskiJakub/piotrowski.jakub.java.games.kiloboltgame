@@ -1,8 +1,10 @@
 package piotrowski.jakub.java.games.kiloboltgame;
 
+import java.util.ArrayList;
+
 public class Robot
 {
-	// Constants are Here
+	// Constants
     final int JUMPSPEED = -15;
     final int MOVESPEED = 5;
     final int GROUND = 382;
@@ -12,11 +14,16 @@ public class Robot
 	private boolean movingLeft = false;
     private boolean movingRight = false;
     private boolean ducked = false;
+    
 	private int speedX = 0, speedY = 1;
 	
 	private static Background bg1 = StartingClass.getBg1();                 
     private static Background bg2 = StartingClass.getBg2();
+    
+    private ArrayList<Projectile> projectiles = new ArrayList<Projectile>();
 	
+    // METHODS
+    
 	public void update()
 	{
 		// Moves character or scrolls background accordingly
@@ -104,6 +111,12 @@ public class Robot
 		}
 	}
 
+	public void shoot()
+	{
+		Projectile p = new Projectile(centerX + 50, centerY - 25);
+		projectiles.add(p);
+	}
+	
 	// Getters and setters
 	
 	public int getCenterX()
@@ -219,5 +232,10 @@ public class Robot
 	public void setCenterY(int centerY)
 	{
 		this.centerY = centerY;
+	}
+
+	public ArrayList<Projectile> getProjectiles()
+	{
+		return projectiles;
 	}
 }
