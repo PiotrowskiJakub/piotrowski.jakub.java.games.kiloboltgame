@@ -35,4 +35,19 @@ public class Background
 	{
 		this.speedX = speedX;
 	}
+
+	public int getSpeedX()
+	{
+		return speedX;
+	}
+
+	public void setBgX(int bgX)
+	{
+		this.bgX = bgX;
+	}
+
+	public void setBgY(int bgY)
+	{
+		this.bgY = bgY;
+	}
 }

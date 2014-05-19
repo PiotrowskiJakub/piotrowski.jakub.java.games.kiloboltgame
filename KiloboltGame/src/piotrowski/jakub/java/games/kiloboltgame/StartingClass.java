@@ -12,11 +12,12 @@ import java.net.URL;
 public class StartingClass extends Applet implements Runnable, KeyListener
 {
 	private static final long serialVersionUID = 438855577255416055L;
-	private Robot robot;
-	private Image image, character, background;
-	private static Background bg1, bg2;
 	private URL base;
 	private Graphics second;
+	private Image image, currentSprite, character, characterDown, characterJumped, background, heliboy;
+	private static Background bg1, bg2;
+	private Robot robot;
+	private Heliboy hb, hb2;
 	
 	@Override
 	public void init()
@@ -30,7 +31,11 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 		
 		base = getDocumentBase();
 		character = getImage(base, "data/character.png");
+		characterDown = getImage(base, "data/down.png");
+		characterJumped = getImage(base, "data/jumped.png");
+		currentSprite = character;
 		background = getImage(base, "data/background.png");
+		heliboy = getImage(base, "data/heliboy.png");
 	}
 
 	@Override
@@ -38,6 +43,9 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 	{
 		bg1 = new Background(0, 0);
 		bg2 = new Background(2160, 0);
+		
+		hb = new Heliboy(340, 360);
+		hb2 = new Heliboy(700, 360);
 		
 		robot = new Robot();
 		
@@ -63,6 +71,12 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 		while(true)
 		{
 			robot.update();
+			if(robot.isJumped())
+				currentSprite = characterJumped;
+			else if(robot.isJumped() == false && robot.isDucked() == false)
+				currentSprite = character;
+			hb.update();
+			hb2.update();
 			bg1.update();
 			bg2.update();
 			repaint();
@@ -98,7 +112,9 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 	{
 		g.drawImage(background, bg1.getBgX(), bg1.getBgY(), this);
 		g.drawImage(background, bg2.getBgX(), bg2.getBgY(), this);
-		g.drawImage(character, robot.getCenterX()-61, robot.getCenterY()-63, this);
+		g.drawImage(heliboy, hb.getCenterX()-48, hb.getCenterY()-48, this);
+		g.drawImage(heliboy, hb2.getCenterX()-48, hb2.getCenterY()-48, this);
+		g.drawImage(currentSprite, robot.getCenterX()-61, robot.getCenterY()-63, this);
 	}
 
 	@Override
@@ -113,13 +129,20 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 				System.out.println("Move up");
 				break;
 			case KeyEvent.VK_DOWN:
-				System.out.println("Move down");
+				currentSprite = characterDown;
+				if(robot.isJumped() == false)
+				{
+					robot.setDucked(true);
+					robot.setSpeedX(0);
+				}
 				break;
 			case KeyEvent.VK_LEFT:
 				robot.moveLeft();
+				robot.setMovingLeft(true);
 				break;
 			case KeyEvent.VK_RIGHT:
 				robot.moveRight();
+				robot.setMovingRight(true);
 				break;
 			case KeyEvent.VK_SPACE:
 				robot.jump();
@@ -136,16 +159,16 @@ public class StartingClass extends Applet implements Runnable, KeyListener
 				System.out.println("Stop moving up");
 				break;
 			case KeyEvent.VK_DOWN:
-				System.out.println("Stop moving down");
+				currentSprite = character;
+				robot.setDucked(false);
 				break;
 			case KeyEvent.VK_LEFT:
-				robot.stop();
+				robot.stopLeft();
 				break;
 			case KeyEvent.VK_RIGHT:
-				robot.stop();
+				robot.stopRight();
 				break;
 			case KeyEvent.VK_SPACE:
-				System.out.println("Stop jumping");
 				break;
 		}
 	}
